@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.mapper.CommentMapper">
+	<select id="findCommentsByArticleId" resultType="com.my.pojo.Comment">
+		select a.*, b.name from comment a, user b where a.user_id = b.user_id and a.article_id = #{articleId} order by created_time
+	</select>
+	<select id="selectMyComments" resultType="com.my.pojo.Comment">
+		select a.*, b.title from comment a, article b where a.article_id = b.article_id and a.user_id = #{userId}
+	</select>
+</mapper>

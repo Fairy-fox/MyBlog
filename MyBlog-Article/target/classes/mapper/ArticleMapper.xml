@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.mapper.ArticleMapper">
+	<select id="findNormalArticleByColumnId" resultType="com.my.pojo.Article">
+		select * from article a, user b, article_column c
+		<where>
+			<if test="colNum != null and colNum!= '' and colNum!= 0">
+				a.column_id = #{colNum}
+			</if>
+			and toped = 0 and a.user_id = b.user_id and a.column_id = c.column_id
+		</where>
+		order by a.created_time desc limit #{start},#{end}
+	</select>
+	<select id="findTopArticleByColumnId" resultType="com.my.pojo.Article">
+		select * from article a,user b,article_column c
+		where toped = 1 and a.user_id = b.user_id and a.column_id = c.column_id order by a.created_time desc
+	</select>
+	<select id="selectArticleById" resultType="com.my.pojo.Article">
+		select a.*, b.name, c.column_name from article a,user b,article_column c
+		where a.user_id = b.user_id and a.column_id = c.column_id and article_id = #{articleId} order by a.created_time desc
+	</select>
+</mapper>

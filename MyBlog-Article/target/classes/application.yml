@@ -1,0 +1,64 @@
+#server
+server:  port: 8001
+  tomcat:    uri-encoding: utf-8
+    max-threads: 1000
+    min-spare-threads: 100
+  servlet:    context-path: /
+    
+    
+dubbo:
+  scan:
+    basePackages: com.my
+  application:
+    name: provider-article
+  registry:
+    address: zookeeper://192.168.217.129:2181?backup=192.168.217.129:2182,192.168.217.129:2183
+  protocol:
+    name: dubbo
+    port: 20881
+
+#spring
+spring:
+  resources:    static-locations: classpath:/static/  datasource:    url: jdbc:mysql:///myblog?serverTimezone=GMT%2B8&characterEncoding=UTF8
+    username: root
+    password: root
+  thymeleaf:
+    prefix: classpath:/templates/pages/
+    cache: false
+  aop:    proxy-target-class: false  #JDK
+  task:    execution:      pool:        core-size: 50
+        max-size: 100
+        queue-capacity: 200
+        keep-alive: 60
+        allow-core-thread-timeout: false
+      thread-name-prefix: db.spring.thread.task-
+#mybatis    
+mybatis-plus:  configuration:    default-statement-timeout: 30
+    map-underscore-to-camel-case: true
+  mapper-locations:  - classpath:/mapper/*.xml
+  
+
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    
+    
+    
+  
+    
+    
