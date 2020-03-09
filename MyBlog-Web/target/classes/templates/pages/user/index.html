@@ -17,31 +17,48 @@
 			</a>
 
 			<ul class="layui-nav fly-nav-user">
-				<li  id="afterlogin" class="layui-nav-item">
+
+				<!-- 未登入的状态 -->
+				<span id="beforelogin">
+					<li class="layui-nav-item"><a
+						class="iconfont icon-touxiang layui-hide-xs"
+						href="/user/login.html"></a></li>
+					<li class="layui-nav-item"><a href="/user/login">登入</a></li>
+					<li class="layui-nav-item"><a href="/user/reg">注册</a></li>
+					<li class="layui-nav-item layui-hide-xs"><a href="/app/qq/"
+						onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})"
+						title="QQ登入" class="iconfont icon-qq"></a></li>
+					<li class="layui-nav-item layui-hide-xs"><a href="/app/weibo/"
+						onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})"
+						title="微博登入" class="iconfont icon-weibo"></a></li>
+				</span>
+				<!-- 登入后的状态 -->
+
+				<li style="display: none" id="afterlogin" class="layui-nav-item">
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
-						class="layui-hide-xs">[[${myUser.name}]]</cite> <i
+						class="layui-hide-xs">贤心</cite> <i
 						class="iconfont icon-renzheng layui-hide-xs"></i> <img
-						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
-							<a href="/user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a>
+							<a href="/user/set"><i class="layui-icon">&#xe620;</i>基本设置</a>
 						</dd>
 						<dd>
-							<a href="/user/message.html"><i class="iconfont icon-tongzhi"
+							<a href="/user/message"><i class="iconfont icon-tongzhi"
 								style="top: 4px;"></i>我的消息</a>
 						</dd>
 						<dd>
-							<a href="/user/home.html"><i class="layui-icon"
+							<a href="/user/home"><i class="layui-icon"
 								style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
 						</dd>
 						<hr style="margin: 5px 0;">
 						<dd>
-							<a href="/user/logout/" style="text-align: center;">退出</a>
+							<a href="/user/logout" style="text-align: center;">退出</a>
 						</dd>
 					</dl>
 				</li>
-				</ul>
+			</ul>
 		</div>
 	</div>
 
@@ -80,34 +97,36 @@
     -->
 			<div class="layui-tab layui-tab-brief" lay-filter="user">
 				<ul class="layui-tab-title" id="LAY_mine">
-					<li data-type="mine-jie" lay-id="index" class="layui-this">我发的帖（<span>[[${articles.size()}]]</span>）
+					<li data-type="mine-jie" lay-id="index" class="layui-this">我发的帖（<span
+						id="artsNum"></span>）
 					</li>
 					<li data-type="collection" data-url="/collection/find/"
-						lay-id="collection">我收藏的帖（<span>16</span>）
+						lay-id="collection" id="collection">我收藏的帖（<span id="collectNum"></span>）
 					</li>
 				</ul>
 				<div class="layui-tab-content" style="padding: 20px 0;">
 					<div class="layui-tab-item layui-show">
-						<ul class="mine-view jie-row">
-							<li th:each="article:${articles}"><a class="jie-title" th:href="@{/article/detail(articleId=${article.articleId})}"
-								target="_blank">[(${article.content})]</a> <i th:text="${#calendars.format(article.createdTime,'yyyy-MM-dd hh:mm:ss')}"></i> <a class="mine-edit" href="/article/edit/8116">编辑</a> <em>661阅/[[${article.commentsNum}]]答</em>
-							</li>
+						<ul id="myArt" class="mine-view jie-row">
 						</ul>
 						<div id="LAY_page"></div>
 						<div style="text-align: center">
-						<div class="pagination" id="pageNum"></div>
-						<div class="pageJump">
-							<span>跳转到</span> <input type="text" /> <span>页</span>
-							<button type="button" class="button">确定</button>
+							<div class="pagination" id="pageNum"></div>
+							<div class="pageJump">
+								<span>跳转到</span> <input type="text" /> <span>页</span>
+								<button type="button" class="button">确定</button>
+							</div>
 						</div>
 					</div>
-					</div>
 					<div class="layui-tab-item">
-						<ul class="mine-view jie-row">
-							<li><a class="jie-title" href="../jie/detail.html"
-								target="_blank">基于 layui 的极简社区页面模版</a> <i>收藏于23小时前</i></li>
+						<ul id="myCollect" class="mine-view jie-row">
 						</ul>
-						<div id="LAY_page1"></div>
+						<div style="text-align: center">
+							<div class="pagination2" id="pageNum2"></div>
+							<div class="pageJump">
+								<span>跳转到</span> <input type="text" /> <span>页</span>
+								<button type="button" class="button">确定</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -134,7 +153,149 @@ layui.config({
 }).extend({
   fly: 'index'
 }).use('fly');
+$(function () {
+	checkLogin();
+	getArticle();
+	initPagination(1);
+	initCollectPage(1);
+});
 
+window.onload=function(){
+	var h = window.location.hash;
+	$(h).click();
+}
+
+function checkLogin() {
+	var _ticket = $.cookie("MY_TICKET");
+	if (!_ticket) {
+		return;
+	}
+	//当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
+	$.ajax({
+		url : "http://www.myblog.com/user/loginquery/" + _ticket,
+		dataType : "jsonp",
+		type : "GET",
+		success : function(data) {
+			if (data.status == 200) {
+				var _data = JSON.parse(data.data);
+				console.log(_data.name);
+				$("#afterlogin").find("cite").html(_data.name);
+				$("#afterlogin").show();
+				$("#afterpost").show();
+				$("#beforelogin").hide();
+				$("#myPic").attr("src", _data.picture);
+			}
+		}
+	});
+}
+
+function initCollectPage(currentPageNum) {
+	$.get("/user/queryCollectArts",{"pageNum":currentPageNum},function(result) {
+		if(result.status == 200) {
+			doHandleArticleResult2(result);
+			var total = result.data.total;
+			$("#collectNum").html(total);
+			total -= 1;
+			if(total < 1) total = 1;
+			var size = result.data.articleList.length;
+			var pageNum = Math.floor(eval(total/size + 1));
+			if(total == 1) pageNum = 1;
+			_Page({
+				num: pageNum,				//页码数
+				startnum:currentPageNum,				//指定页码
+				elem:$('#pageNum2'),		//指定的元素
+				callback:function(n) {
+					if(isNaN(n)) n = 1;
+					getCollect(n);
+				}
+			});
+		} else {
+			alert("未登录无法访问");
+		}
+	})
+}
+
+function getCollect(pageNum) {
+	var url = "/user/queryCollectArts";
+	var param = {
+		"pageNum" : pageNum
+	};
+	$.get(url, param, doHandleArticleResult2);
+}
+
+function doHandleArticleResult2(result) {
+	if (result.status == 201) {
+		alert(result.msg);
+		return;
+	} else {
+		console.log(result);
+		$("#myCollect").empty();
+		var arts = result.data.articleList;
+		for(var item of arts) {
+			createCollect(item);
+		} 
+	}
+}	
+
+function createCollect(item) {
+	var post_ = $("<li></li>");
+	post_.append("<a class='jie-title' href='/article/detail?articleId="+ item.articleId+"' \target='_blank'>"+item.title+"</a> <i>收藏于"+new Date(item.createdTime).toLocaleString()+"</i>");
+	$("#myCollect").append(post_);
+}
+
+
+
+function initPagination(currentPageNum) {
+	$.get("/user/queryPostArts",{"pageNum":currentPageNum},function(result) {
+		if(result.status == 200) {
+			var total = result.data.total;
+			$("#artsNum").html(total);
+			total = total - 1;
+			if(total < 1) total = 1;
+			var size = result.data.articleList.length;
+			var pageNum = Math.floor(eval(total/size + 1));
+			if(total == 1) pageNum = 1;
+			Page({
+				num: pageNum,				//页码数
+				startnum:currentPageNum,				//指定页码
+				elem:$('#pageNum'),		//指定的元素
+				callback:function(n) {
+					if(isNaN(n)) n = 1;
+					getArticle(n);
+				}
+			});
+		} else {
+			alert("未登录无法访问");
+		}
+	})
+}
+
+function getArticle(pageNum) {
+	var url = "/user/queryPostArts";
+	var param = {
+		"pageNum" : pageNum,
+	};
+	$.get(url, param, doHandleArticleResult);
+}
+
+function doHandleArticleResult(result) {
+	if (result.status == 201) {
+		alert(result.msg);
+		return;
+	} else {
+		$("#myArt").empty();
+		var arts = result.data.articleList;
+		for(var item of arts) {
+			createArticle(item);
+		} 
+	}
+}
+
+function createArticle(item) {
+	var post = $("<li></li>");
+	post.append("<a class='jie-title' href='/article/detail?articleId=" + item.articleId+"' target='_blank'>"+item.content+"</a><i>"+new Date(item.updatedTime).toLocaleString()+"</i><a class='mine-edit' href='/article/edit?articleId="+item.articleId+"'>编辑</a><em>"+item.viewed+"阅/"+item.commentsNum+"答</em>");
+	$("#myArt").append(post);
+}
 </script>
 
 </body>

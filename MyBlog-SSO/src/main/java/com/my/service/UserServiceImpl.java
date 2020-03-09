@@ -1,6 +1,5 @@
 package com.my.service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	JedisPoolUtil jedisPoolUtil;
-	
+
 	@Override
 	public User findUserByEmail(String email) {
 		QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -45,23 +44,30 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public SysResult saveUser(User user) {
-		if(null != findUserByEmail(user.getEmail())) {
-			return SysResult.failure("有重名email");
-		}
-		if(null != findUserByUsername(user.getName())) {
-			return SysResult.failure("有重名昵称");
-		}
-		if(user.getEmail().equals("") || user.getName().equals("") || user.getPassword().equals("")) {
-			return SysResult.failure("请填写完毕后注册");
-		}
 		System.out.println(user);
-		String md5Password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
-		user.setPassword(md5Password);
-		user.setCreatedTime(new Date());
-		user.setUpdatedTime(user.getCreatedTime());
-		user.setKissed(0L);
-		userMapper.insert(user);
-		return SysResult.success();
+		User userDB = userMapper.selectById(user.getUserId());
+		System.out.println(userDB);
+		if(userDB == null) {
+			if(null != findUserByEmail(user.getEmail())) {
+				return SysResult.failure("有重名email");
+			}
+			if(null != findUserByUsername(user.getName())) {
+				return SysResult.failure("有重名昵称");
+			}
+			if(user.getEmail().equals("") || user.getName().equals("") || user.getPassword().equals("")) {
+				return SysResult.failure("请填写完毕后注册");
+			}
+			String md5Password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
+			user.setPassword(md5Password);
+			user.setCreatedTime(new Date());
+			user.setUpdatedTime(user.getCreatedTime());
+			user.setKissed(0L);
+			userMapper.insert(user);
+			return SysResult.success();
+		} else {
+			userMapper.updateById(user);
+			return SysResult.success();
+		}
 	}
 
 	@Override
@@ -80,7 +86,8 @@ public class UserServiceImpl implements UserService {
 		};
 		String key = UUID.randomUUID().toString();
 		userDB.setPassword("123456");
-		userDB.setEmail("123456");
+		email = userDB.getEmail().charAt(0) + "xxxx@xx.xx";
+		userDB.setEmail(email);
 		ObjectMapper mapper = new ObjectMapper();
 		String userJSON = null;
 		try {
@@ -98,6 +105,13 @@ public class UserServiceImpl implements UserService {
 		QueryWrapper<User> wrapper = new QueryWrapper<>();
 		wrapper.eq("user_id", userId);
 		return userMapper.selectOne(wrapper);
+	}
+
+	@Override
+	public void updatePicture(Long userId, String url) {
+		User user = new User();
+		user.setUserId(userId).setPicture(url);
+		userMapper.updateById(user);
 	}
 
 }

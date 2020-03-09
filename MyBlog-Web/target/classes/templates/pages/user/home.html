@@ -38,7 +38,7 @@
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
 						class="layui-hide-xs" th:text="${user.name}"></cite> <i
 						class="iconfont icon-renzheng layui-hide-xs"></i> <img
-						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						id="myPic" th:src="${user.picture}">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
@@ -64,7 +64,7 @@
 </div>
 
 <div class="fly-home fly-panel" style="background-image: url();">
-  <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="贤心">
+  <img th:src="${user.picture}" alt="贤心">
   <i class="iconfont icon-renzheng" title="Fly社区认证"></i>
   <h1>
   	[[${user.name}]]
@@ -107,7 +107,7 @@
             <span th:if="${article.elited == true}" class="fly-jing">精</span>
             <a  class="jie-title" th:href="@{/article/detail(articleId=${article.articleId})}" th:text="${article.title}"></a>
             <i th:text="${#calendars.format(article.createdTime,'MM-dd hh:mm:ss')}"></i>
-            <em class="layui-hide-xs">1136阅/[[${article.commentsNum}]]答</em>
+            <em class="layui-hide-xs">[[${article.viewed}]]阅/[[${article.commentsNum}]]答</em>
           </li>
         </ul>
       </div>
@@ -171,6 +171,7 @@ function checkLogin() {
 						$("#afterlogin").show();
 						$("#afterpost").show();
 						$("#beforelogin").hide();
+						$("#myPic").attr("src", _data.picture);
 					}
 				}
 			});

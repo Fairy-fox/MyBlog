@@ -50,13 +50,10 @@ public class ArticleController {
 	@RequestMapping("/upLoadArt")
 	@ResponseBody
 	public SysResult uploadArt(Article article, HttpServletRequest request) {
-		System.out.println(article);
 		if(article.getColumnId() == null || article.getTitle() == null || article.getContent() == null) {
 			return SysResult.failure("缺少参数");
 		}
-		String cookieValue = CookieUtil.getCookieValue(request, "MY_TICKET");
-		String userInfo = jedisPoolUtil.getJedisCluster().get(cookieValue);
-		User user = ObjectMapperUtil.toObj(userInfo, User.class);
+		User user = (User) request.getAttribute("myUser");
 		articleService.uploadArt(article, user.getUserId());
 		return SysResult.success();
 	}
@@ -75,4 +72,29 @@ public class ArticleController {
 		return "article/detail";
 	}
 	
+	@RequestMapping("/collect")
+	@ResponseBody
+	public SysResult collectArticle(Long articleId, HttpServletRequest request) {
+		User user = (User) request.getAttribute("myUser");
+		articleService.collectArticle(articleId, user.getUserId());
+		return SysResult.success();
+	}
+	
+	@RequestMapping("/edit")
+	public String collectionArticle(Long articleId, HttpServletRequest request) {
+		User user = (User) request.getAttribute("myUser");
+		Article article = articleService.findArticleByArtId(articleId, user.getUserId());
+		if (article == null) return "redirect:/other/notice";
+		request.setAttribute("article", article);
+		request.setAttribute("user", user);
+		return "article/edit";
+	}
+	
+	@RequestMapping("/collectCheck")
+	@ResponseBody
+	public SysResult collectCheck(Long articleId, HttpServletRequest request) {
+		User user = (User) request.getAttribute("myUser");
+		if(user == null) return SysResult.success(false);
+		return SysResult.success(articleService.collectCheck(articleId, user.getUserId()));
+	}
 }

@@ -36,19 +36,19 @@
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
 						class="layui-hide-xs">贤心</cite> <i
 						class="iconfont icon-renzheng layui-hide-xs"></i>
-					<img
+					<img  id="myPic"
 						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
-							<a href="user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a>
+							<a href="/user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a>
 						</dd>
 						<dd>
-							<a href="user/message.html"><i class="iconfont icon-tongzhi"
+							<a href="/user/message.html"><i class="iconfont icon-tongzhi"
 								style="top: 4px;"></i>我的消息</a>
 						</dd>
 						<dd>
-							<a href="user/home.html"><i class="layui-icon"
+							<a href="/user/home.html"><i class="layui-icon"
 								style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
 						</dd>
 						<hr style="margin: 5px 0;">
@@ -208,6 +208,7 @@ function checkLogin() {
 				$("#afterlogin").show();
 				$("#afterpost").show();
 				$("#beforelogin").hide();
+				$("#myPic").attr("src", _data.picture);
 			}
 		}
 	});

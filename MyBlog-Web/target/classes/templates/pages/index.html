@@ -22,8 +22,8 @@
 					<li class="layui-nav-item"><a
 						class="iconfont icon-touxiang layui-hide-xs"
 						href="user/login.html"></a></li>
-					<li class="layui-nav-item"><a href="user/login">登入</a></li>
-					<li class="layui-nav-item"><a href="user/reg">注册</a></li>
+					<li class="layui-nav-item"><a href="/user/login">登入</a></li>
+					<li class="layui-nav-item"><a href="/user/reg">注册</a></li>
 					<li class="layui-nav-item layui-hide-xs"><a href="/app/qq/"
 						onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})"
 						title="QQ登入" class="iconfont icon-qq"></a></li>
@@ -37,7 +37,7 @@
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
 						class="layui-hide-xs">贤心</cite> <i
 						class="iconfont icon-renzheng layui-hide-xs"></i> <img
-						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						 id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
@@ -281,7 +281,7 @@
 					var size = result.data.size;
 					console.log(total);
 					console.log(size);
-					var pageNum = total/size + 1;
+					var pageNum = Math.floor(eval(total/size + 1));
 					Page({
 						num: pageNum,				//页码数
 						startnum:currentPageNum,				//指定页码
@@ -298,11 +298,6 @@
 		}
 		
 		
-		function jumpPage(jumpTo) {
-			var columnId = $("#columnData").data("columnId", 0);
-			console.log(jumpTo);
-			console.log(columnId);
-		}
 		
 		function getArticle(pageNum, colNum) {
 			var url = "/article/query";
@@ -369,6 +364,7 @@
 						$("#afterlogin").show();
 						$("#afterpost").show();
 						$("#beforelogin").hide();
+						$("#myPic").attr("src", _data.picture);
 					}
 				}
 			});

@@ -19,6 +19,18 @@ public interface ArticleService {
 	Map<String, Integer> findTotalCount(Integer columnNum);
 
 
-	List<Article> findMyArticleByUserId(Integer pageNum, Long userId);
+	Map<String, Object> findMyArticleByUserId(Integer pageNum, Long userId);
+
+
+	void collectArticle(Long articleId, Long userId);
+
+
+	Map<String, Object> findMyCollectionByUserId(Integer pageNum, Long userId);
+
+
+	Article findArticleByArtId(Long articleId, Long userId);
+
+
+	Boolean collectCheck(Long articleId, Long userId);
 	
 }

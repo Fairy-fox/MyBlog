@@ -27,7 +27,15 @@ public class MvcConfigurer implements WebMvcConfigurer {
 		List<String> list = new ArrayList<>();
 		list.add("/article/add");
 		list.add("/article/detail");
+		list.add("/article/collect");;
+		list.add("/article/upLoadArt");
+		list.add("/article/edit");
+		list.add("/article/collectCheck");
 		list.add("/user/index");
+		list.add("/user/queryCollectArts");
+		list.add("/user/queryPostArts");
+		list.add("/user/editUser");
+		list.add("/user/upload");
 		registry.addInterceptor(userInterceptor).addPathPatterns(list);
 	}
 	

@@ -15,4 +15,6 @@ public interface UserService {
 
 	User findUserByUserId(Long userId);
 
+	void updatePicture(Long userId, String url);
+
 }

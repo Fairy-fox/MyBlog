@@ -17,13 +17,15 @@ dubbo:
 
 #spring
 spring:
-  resources:    static-locations: classpath:/static/  datasource:    url: jdbc:mysql:///myblog?serverTimezone=GMT%2B8&characterEncoding=UTF8
+  resources:    static-locations: 
+             - classpath:/static/
+  datasource:    url: jdbc:mysql:///myblog?serverTimezone=GMT%2B8&characterEncoding=UTF8
     username: root
     password: root
   thymeleaf:
     prefix: classpath:/templates/pages/
     cache: false
-  aop:    proxy-target-class: false  #JDK
+  aop:      proxy-target-class: false  #JDK
   task:    execution:      pool:        core-size: 50
         max-size: 100
         queue-capacity: 200
@@ -35,10 +37,6 @@ mybatis-plus:  configuration:    default-statement-timeout: 30
     map-underscore-to-camel-case: true
   mapper-locations:  - classpath:/mapper/*/*.xml
   
-#logging
-logging:  level:   com.cy: debug
-  file: D:/TCGBIII/a.log
-
    
    
    

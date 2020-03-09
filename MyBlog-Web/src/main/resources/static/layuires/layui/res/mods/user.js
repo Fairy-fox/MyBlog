@@ -167,15 +167,15 @@ layui.define(['laypage', 'fly', 'element', 'flow'], function(exports){
 
       upload.render({
         elem: '.upload-img'
-        ,url: '/user/upload/'
+        ,url: '/user/uploadPic/'
         ,size: 50
         ,before: function(){
           avatarAdd.find('.loading').show();
         }
         ,done: function(res){
-          if(res.status == 0){
+          if(res.status == 200){
             $.post('/user/set/', {
-              avatar: res.url
+              avatar: res.data
             }, function(res){
               location.reload();
             });

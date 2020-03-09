@@ -1,10 +1,10 @@
 function Page(opt){
-		var set = $.extend({num:null,startnum:1,elem:null,callback:null},opt||{});
+		let set = $.extend({num:null,startnum:1,elem:null,callback:null},opt||{});
 		if(set.startnum>set.num||set.startnum<1){
 			set.startnum = 1;
 		}
-		var n = 0,htm = '';
-		var clickpages = {
+		let n = 0,htm = '';
+		let clickpages = {
 			elem:set.elem,
 			num:set.num,
 			callback:set.callback,
@@ -12,9 +12,9 @@ function Page(opt){
 				this.elem.next('div.pageJump').children('.button').unbind('click')
 				this.JumpPages();
 				this.elem.children('li').click(function () {
-					var txt = $(this).children('a').text();
-					var page = '', ele = null;
-					var page1 = parseInt(clickpages.elem.children('li.active').attr('page'));
+					let txt = $(this).children('a').text();
+					let page = '', ele = null;
+					let page1 = parseInt(clickpages.elem.children('li.active').attr('page'));
 					if (isNaN(parseInt(txt))) {
 						switch (txt) {
 							case '下一页':
@@ -81,13 +81,13 @@ function Page(opt){
 			},
 			JumpPages:function () {
 				this.elem.next('div.pageJump').children('.button').click(function(){
-					var i = parseInt($(this).siblings('input').val());
+					let i = parseInt($(this).siblings('input').val());
 					if(isNaN(i)||(i<=0)||i>clickpages.num){
 						return;
 					}else if(clickpages.num>6){
 						clickpages.newPages('jump',i);
 					}else{
-						var ele = clickpages.elem.children('li[page='+i+']');
+						let ele = clickpages.elem.children('li[page='+i+']');
 						clickpages.actPages(ele);
 						if (clickpages.callback){
 							clickpages.callback(i);
@@ -103,11 +103,11 @@ function Page(opt){
 
 			//newpages
 			newPages:function (type, i) {
-				var html = "",htmlLeft="",htmlRight="",htmlC="";
-				var HL = '<li><a>...</a></li>';
+				let html = "",htmlLeft="",htmlRight="",htmlC="";
+				let HL = '<li><a>...</a></li>';
 				html = '<li><a  aria-label="Previous">&laquo;</a></li>\
 					<li><a>上一页</a></li>'
-				for (var n = 0;n<3;n++){
+				for (let n = 0;n<3;n++){
 					htmlC += '<li '+((n-1)==0?'class="active"':'')+' page="'+(i+n-1)+'"><a>'+(i+n-1)+'</a></li>';
 					htmlLeft += '<li '+((n+2)==i?'class="active"':'')+' page="'+(n+2)+'"><a>'+(n+2)+'</a></li>';
 					htmlRight += '<li '+((set.num+n-3)==i?'class="active"':'')+' page="'+(set.num+n-3)+'"><a>'+(set.num+n-3)+'</a></li>';
@@ -168,9 +168,9 @@ function Page(opt){
 			return;
 		}else if(parseInt(set.num)<=6){
 			n = parseInt(set.num);
-			var html='<li><a  aria-label="Previous">&laquo;</a></li>\
+			let html='<li><a  aria-label="Previous">&laquo;</a></li>\
 					<li><a>上一页</a></li>';
-			for(var i=1;i<=n;i++){
+			for(let i=1;i<=n;i++){
 				if(i==set.startnum){
 					html+='<li class="active" page="'+i+'"><a>'+i+'</a></li>';
 				}else{

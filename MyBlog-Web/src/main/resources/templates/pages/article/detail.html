@@ -37,7 +37,7 @@
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
 						class="layui-hide-xs">贤心</cite> <i
 						class="iconfont icon-renzheng layui-hide-xs"></i> <img
-						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						 id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
@@ -65,16 +65,8 @@
   <div class="fly-panel fly-column">
     <div class="layui-container">
       <ul class="layui-clear">
-        <li class="layui-hide-xs"><a href="/">首页</a></li> 
-        <li class="layui-this"><a href="">提问</a></li> 
-        <li><a href="">分享<span class="layui-badge-dot"></span></a></li> 
-        <li><a href="">讨论</a></li> 
-        <li><a href="">建议</a></li> 
-        <li><a href="">公告</a></li> 
-        <li><a href="">动态</a></li> 
-        <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="fly-mid"></span></li> 
-        
-        <span th:if="${user != null}">
+        <li class="layui-hide-xs"><a href="/index">首页</a></li> 
+        <span th:if="${user != null}" style="float:right; margin-right:37%">
         <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a th:href="@{/user/index(userId=${article.userId})}">我发表的贴</a></li> 
         <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a th:href="@{/user/index(userId=${article.userId})} + '#collection'">我收藏的贴</a></li> 
         </span>
@@ -119,9 +111,10 @@
             <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span> -->
           </div>
           <span class="fly-list-nums"> 
-            <a href="#comment"><i class="iconfont" title="回答">&#xe60c;</i> <span th:text="${article.commentsNum}"/></a>
+            <a href="#flyReply"><i class="iconfont" title="回答">&#xe60c;</i> <span th:text="${article.commentsNum}"/></a>
             <i class="iconfont" title="人气">&#xe60b;</i>[[${article.viewed}]]
           </span>
+          <span id="doCollect" style="float:right; margin-right:100px" th:onclick="'collectArt('+ ${article.articleId} + ')'" class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="1" >收藏</span>
         </div>
         <div class="detail-about">
           <a class="fly-avatar" th:href="@{/user/home(userId=${article.userId})}">
@@ -138,7 +131,7 @@
           </div>
           <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
             <span th:text="'悬赏'+${article.wanted}+'飞吻'" style="padding-right: 10px; color: #FF7200"></span>  
-            <span th:if="${article.userId == user.userId}"><span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="add.html">编辑此贴</a></span></span>
+            <span th:if="${article.userId == user.userId}"><span class="layui-btn layui-btn-xs jie-admin" type="edit"><a th:href="@{/article/edit(articleId=${article.articleId})}">编辑此贴</a></span></span>
           </div>
         </div>
         <div class="detail-body photos">
@@ -161,7 +154,7 @@
                 <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt=" ">
               </a>
               <div class="fly-detail-user">
-                <a href="" class="fly-link">
+                <a th:href="@{/user/home(userId=${comment.userId})}" class="fly-link">
                   <cite th:text="${comment.name}"></cite>
                 </a>
                 <span th:if="${article.userId == comment.userId}">
@@ -277,9 +270,19 @@ layui.config({
   ,fly = layui.fly;
 });
 
-$(checkLogin());
+$(function() {
+	checkLogin();
+	collectCheck();
+})
 
-
+function collectCheck() {
+	var articleId = window.location.search;
+	$.get("/article/collectCheck"+articleId, null, function(result){
+		if(result.data) {
+			$("#doCollect").html("取消收藏");
+		}
+	});
+}
 function loginCheck() {
 	var _ticket = $.cookie("MY_TICKET");
 	if (!_ticket) {
@@ -306,10 +309,39 @@ function checkLogin() {
 					$("#afterlogin").show();
 					$("#afterpost").show();
 					$("#beforelogin").hide();
+					$("#myPic").attr("src", _data.picture);
 				}
 			}
 		});
 	}
+	
+function collectArt(articleId) {
+	var _ticket = $.cookie("MY_TICKET");
+	if (!_ticket) {
+		alert("没有登陆，无法收藏");
+		return;
+	}
+	if($("#doCollect").html() == "收藏") {
+		$.get("/article/collect", {"articleId":articleId}, function(result) {
+			if(result.status != 200) {
+				alert("收藏失败" + result.msg);
+			} else {
+				alert("收藏成功");
+				$("#doCollect").html("取消收藏");
+			}
+		});
+	} else {
+		$.get("/article/collect", {"articleId":articleId}, function(result) {
+			if(result.status != 200) {
+				alert("收藏失败" + result.msg);
+			} else {
+				alert("取消收藏成功");
+				$("#doCollect").html("收藏");
+			}
+		});
+	}
+	
+}
 </script>
 
 </body>

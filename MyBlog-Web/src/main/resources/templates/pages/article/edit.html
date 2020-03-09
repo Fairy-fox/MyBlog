@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>修改你的帖子</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <div th:replace="/common/link"></div>
+</head>
+<body>
+
+<div class="fly-header layui-bg-black">
+  <div class="layui-container">
+    <a class="fly-logo" href="/">
+      <img src="/layuires/layui/lay/g3.png" alt="layui">
+    </a>
+    
+    <ul class="layui-nav fly-nav-user">
+      
+				<li  id="afterlogin" class="layui-nav-item">
+					<a class="fly-nav-avatar" href="javascript:;"> <cite
+						class="layui-hide-xs">贤心</cite> <i
+						class="iconfont icon-renzheng layui-hide-xs"></i>
+					<img  id="myPic"
+						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+				</a>
+					<dl class="layui-nav-child">
+						<dd>
+							<a href="/user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a>
+						</dd>
+						<dd>
+							<a href="/user/message.html"><i class="iconfont icon-tongzhi"
+								style="top: 4px;"></i>我的消息</a>
+						</dd>
+						<dd>
+							<a href="/user/home.html"><i class="layui-icon"
+								style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
+						</dd>
+						<hr style="margin: 5px 0;">
+						<dd>
+							<a href="/user/logout/" style="text-align: center;">退出</a>
+						</dd>
+					</dl>
+				</li>
+    </ul>
+  </div>
+</div>
+
+<div class="layui-container fly-marginTop">
+  <div class="fly-panel" pad20 style="padding-top: 5px;">
+   <!-- <div class="fly-none">没有权限</div> -->
+    <div class="layui-form layui-form-pane">
+      <div class="layui-tab layui-tab-brief" lay-filter="user">
+        <ul class="layui-tab-title">
+          <li class="layui-this">编辑帖子 </li>
+        </ul>
+        <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
+          <div class="layui-tab-item layui-show">
+              <div class="layui-row layui-col-space15 layui-form-item">
+                <div class="layui-col-md3">
+                  <label class="layui-form-label">所在专栏</label>
+                  <div class="layui-input-block">
+                    <select  lay-verify="required" id="artColumn" name="class" lay-filter="column"> 
+                      <option></option> 
+                      <option th:selected="${article.columnId} == 6? 'selected'" value="6">提问</option> 
+                      <option th:selected="${article.columnId} == 5? 'selected'" value="5">分享</option> 
+                      <option th:selected="${article.columnId} == 4? 'selected'" value="4">讨论</option> 
+                      <option th:selected="${article.columnId} == 3? 'selected'" value="3">建议</option> 
+                      <option th:selected="${article.columnId} == 2? 'selected'" value="2">公告</option> 
+                      <option th:selected="${article.columnId} == 1? 'selected'" value="1">动态</option> 
+                    </select>
+                  </div>
+                </div>
+                <div class="layui-col-md9">
+                  <label for="L_title" class="layui-form-label">题目</label>
+                  <div class="layui-input-block">
+                    <input type="text" th:value="${article.title}" id="L_title" name="title" required lay-verify="required" autocomplete="off" class="layui-input">
+                    <input type="hidden" id="articleId" th:value="${article.articleId}">
+                  </div>
+                </div>
+              </div>
+              <div class="layui-row layui-col-space15 layui-form-item layui-hide" id="LAY_quiz">
+                <div class="layui-col-md3">
+                  <label class="layui-form-label">所属产品</label>
+                  <div class="layui-input-block">
+                    <select name="project">
+                      <option></option>
+                      <option value="layui">layui</option>
+                      <option value="独立版layer">独立版layer</option>
+                      <option value="独立版layDate">独立版layDate</option>
+                      <option value="LayIM">LayIM</option>
+                      <option value="Fly社区模板">Fly社区模板</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="layui-col-md3">
+                  <label class="layui-form-label" for="L_version">版本号</label>
+                  <div class="layui-input-block">
+                    <input type="text" id="L_version" value="" name="version" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+                <div class="layui-col-md6">
+                  <label class="layui-form-label" for="L_browser">浏览器</label>
+                  <div class="layui-input-block">
+                    <input type="text" id="L_browser"  value="" name="browser" placeholder="浏览器名称及版本，如：IE 11" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+              </div>
+              <div class="layui-form-item layui-form-text">
+                <div class="layui-input-block">
+                  <textarea id="L_content" name="content" required lay-verify="required" th:text="${article.content}" class="layui-textarea fly-editor" style="height: 260px;"></textarea>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <div class="layui-inline">
+                  <label class="layui-form-label">悬赏飞吻</label>
+                  <div class="layui-input-inline" style="width: 190px;">
+                    <select id="experience">
+                      <option select="selected"  th:value="${article.wanted}">[[${article.wanted}]]</option>
+                    </select>
+                  </div>
+                  <div class="layui-form-mid layui-word-aux">发表后无法更改飞吻</div>
+                </div>
+                 <div class="layui-inline">
+                  <label class="layui-form-label">权限飞吻</label>
+                  <div class="layui-input-inline" style="width: 190px;">
+                    <input type="number" value="0" id="expCheck" th:placeholder="${article.needed}"  class="layui-input"/>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="layui-form-item">
+                <label for="L_vercode" class="layui-form-label">人类验证</label>
+                <div class="layui-input-inline">
+                  <input type="text" id="L_vercode" name="vercode" required lay-verify="required" placeholder="请回答后面的问题" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid">
+                  <span style="color: #c00;">1+1=?</span>
+                </div>
+              </div> -->
+                <button class="layui-btn" onclick="doUpArt()" lay-submit>立即发布</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fly-footer">
+  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
+  <p>
+    <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
+    <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
+    <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
+  </p>
+</div>
+<script>
+layui.cache.page = 'article';
+layui.cache.user = {
+  username: '游客'
+  ,uid: -1
+  ,avatar: '../../res/images/avatar/00.jpg'
+  ,experience: 83
+  ,sex: '男'
+};
+layui.config({
+  version: "3.0.0"
+  ,base: '/layuires/layui/res/mods/'
+}).extend({
+  fly: 'index'
+}).use('fly');
+
+$(checkLogin());
+function checkLogin() {
+	var _ticket = $.cookie("MY_TICKET");
+	if (!_ticket) {
+		return;
+	}
+	//当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
+	$.ajax({
+		url : "http://www.myblog.com/user/loginquery/" + _ticket,
+		dataType : "jsonp",
+		type : "GET",
+		success : function(data) {
+			if (data.status == 200) {
+				var _data = JSON.parse(data.data);
+				console.log(_data.name);
+				$("#afterlogin").find("cite").html(_data.name);
+				$("#afterlogin").show();
+				$("#afterpost").show();
+				$("#beforelogin").hide();
+				$("#myPic").attr("src", _data.picture);
+			}
+		}
+	});
+}
+	function doUpArt() {
+		var _ticket = $.cookie("MY_TICKET");
+		if (!_ticket) {
+			alert("请先登录");
+			window.location.href="http://www.myblog/user/login"
+			return;
+		}
+		var artColumn = $("#artColumn").val();
+		var title = $("#L_title").val();
+		var content = $("#L_content").val();
+		var needed = $("#experience").val();
+		var articleId= $("#articleId").val();
+		if(artColumn == "" || title =="" || content=="") return;
+		var param = {"columnId":artColumn, "title":title, "content":content, "needed":needed, "articleId":articleId};
+		console.log(param);
+		 $.post("/article/upLoadArt", param, function(result) {
+			if(result.status == 200) {
+				alert("编辑成功");
+				window.location.href="http://www.myblog.com/article/detail?articleId=" + articleId;
+			} else {
+				alert("编辑失败" + result.msg);
+			}
+		});
+	}	
+</script>
+
+</body>
+</html>
