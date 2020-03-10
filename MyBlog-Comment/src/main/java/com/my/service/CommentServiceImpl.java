@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.my.mapper.ArticleMapper;
+import com.my.mapper.CommentLikeMapper;
 import com.my.mapper.CommentMapper;
-import com.my.pojo.Article;
 import com.my.pojo.Comment;
 
 @Service
@@ -21,6 +20,9 @@ public class CommentServiceImpl implements CommentService {
 	
 	@Autowired
 	ArticleMapper articleMapper;
+	
+	@Autowired
+	CommentLikeMapper clMapper;
 	
 	@Override
 	public List<Comment> getCommentsByArticleId(Long articleId) {
@@ -55,6 +57,11 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public List<Comment> findMyCommentByUserId(Long userId) {
 		return commentMapper.selectMyComments(userId);
+	}
+
+	@Override
+	public List<Long> findMyLikes(Long articleId, Long userId) {
+		return clMapper.findMyLikesByArtIdAndUId(articleId, userId);
 	}
 
 	

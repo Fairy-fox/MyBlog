@@ -25,16 +25,16 @@ import com.my.vo.SysResult;
 @Controller
 @RequestMapping("/article")
 public class ArticleController {
-	
+
 	@Reference(check = false)
 	private ArticleService articleService;
-	
+
 	@Autowired
 	JedisPoolUtil jedisPoolUtil;
-	
+
 	@Reference(check = false)
 	private CommentService commentService;
-	
+
 	@RequestMapping("/query")
 	@ResponseBody
 	public SysResult findAllPages(Integer pageNum, Integer colNum) {
@@ -44,9 +44,9 @@ public class ArticleController {
 	@RequestMapping("/queryTotalNum")
 	@ResponseBody
 	public SysResult findPageNumb(@RequestParam(required = false) Integer columnNum) {
-		 return SysResult.success(articleService.findTotalCount(columnNum));
+		return SysResult.success(articleService.findTotalCount(columnNum));
 	}
-	
+
 	@RequestMapping("/upLoadArt")
 	@ResponseBody
 	public SysResult uploadArt(Article article, HttpServletRequest request) {
@@ -57,7 +57,7 @@ public class ArticleController {
 		articleService.uploadArt(article, user.getUserId());
 		return SysResult.success();
 	}
-	
+
 	@RequestMapping("/detail")
 	public String articleDetail(Long articleId, Model model, HttpServletRequest request) {
 		Article article = articleService.getArticleInfoById(articleId);
@@ -66,12 +66,21 @@ public class ArticleController {
 		String cookieValue = CookieUtil.getCookieValue(request, "MY_TICKET");
 		String userInfo = jedisPoolUtil.getJedisCluster().get(cookieValue);
 		User user = ObjectMapperUtil.toObj(userInfo, User.class);
+		List<Long> likes = commentService.findMyLikes(articleId, user.getUserId());
+		for (Comment comment : comments) {
+			a: for (Long like : likes) {
+				if(comment.getCommentId().equals(like)) {
+					comment.setLike(true);
+					break a;
+				}
+			}
+		}
 		model.addAttribute("user", user);
 		model.addAttribute("article", article);
 		model.addAttribute("comments", comments);
 		return "article/detail";
 	}
-	
+
 	@RequestMapping("/collect")
 	@ResponseBody
 	public SysResult collectArticle(Long articleId, HttpServletRequest request) {
@@ -79,7 +88,7 @@ public class ArticleController {
 		articleService.collectArticle(articleId, user.getUserId());
 		return SysResult.success();
 	}
-	
+
 	@RequestMapping("/edit")
 	public String collectionArticle(Long articleId, HttpServletRequest request) {
 		User user = (User) request.getAttribute("myUser");
@@ -89,7 +98,7 @@ public class ArticleController {
 		request.setAttribute("user", user);
 		return "article/edit";
 	}
-	
+
 	@RequestMapping("/collectCheck")
 	@ResponseBody
 	public SysResult collectCheck(Long articleId, HttpServletRequest request) {

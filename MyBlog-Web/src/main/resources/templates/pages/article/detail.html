@@ -177,7 +177,7 @@
               <p th:text="${comment.content}"></p>
             </div>
             <div class="jieda-reply">
-              <span class="jieda-zan zanok" type="zan">
+              <span onclick="doLike(this)" value="1" class="jieda-zan zanok" type="zan">
                 <i class="iconfont icon-zan"></i>
                 <em  th:text="${comment.agreed}"></em>
               </span>
@@ -303,8 +303,7 @@ function checkLogin() {
 			type : "GET",
 			success : function(data) {
 				if (data.status == 200) {
-					var _data = JSON.parse(data.data);
-					console.log(_data.name);
+					var _data = data.data;
 					$("#afterlogin").find("cite").html(_data.name);
 					$("#afterlogin").show();
 					$("#afterpost").show();
@@ -341,6 +340,20 @@ function collectArt(articleId) {
 		});
 	}
 	
+}
+
+function doLike(ele) {
+	if($(ele).attr("value") == 1) {
+		$(ele).attr("class", "jieda-zan");
+		$(ele).attr("value", -1);
+		var _em = $(ele).find("em");
+		_em.html(_em.html() - 1);
+	} else {
+		$(ele).attr("class", "jieda-zan zanok");
+		$(ele).attr("value", 1);
+		var _em = $(ele).find("em");
+		_em.html(eval(_em.html()) + 1);
+	}
 }
 </script>
 

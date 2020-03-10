@@ -32,4 +32,6 @@ public class Comment extends BasePojo{
 	private Boolean selected;
 	@TableField(exist = false)
 	private String title;
+	@TableField(exist = false)
+	private boolean like;
 }

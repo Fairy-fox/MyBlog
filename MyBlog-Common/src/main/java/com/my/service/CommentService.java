@@ -19,4 +19,6 @@ public interface CommentService {
 
 	List<Comment> findMyCommentByUserId(Long userId);
 
+	List<Long> findMyLikes(Long articleId, Long userId);
+
 }
