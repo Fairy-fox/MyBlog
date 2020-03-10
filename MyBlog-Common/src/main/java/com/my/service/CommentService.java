@@ -21,4 +21,8 @@ public interface CommentService {
 
 	List<Long> findMyLikes(Long articleId, Long userId);
 
+	void doUserLike(Boolean flag, Long commentId, Long userId);
+
+	void selectComment(Long commentId);
+
 }

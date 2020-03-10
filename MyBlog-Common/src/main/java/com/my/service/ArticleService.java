@@ -32,5 +32,11 @@ public interface ArticleService {
 
 
 	Boolean collectCheck(Long articleId, Long userId);
+
+
+	List<Article> findWeekArts();
+
+
+	void decrCommentNum(Long articleId);
 	
 }

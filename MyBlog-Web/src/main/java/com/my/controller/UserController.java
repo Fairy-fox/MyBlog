@@ -12,12 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.dubbo.config.spring.util.ObjectUtils;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.my.pojo.Article;
 import com.my.pojo.Comment;
@@ -170,7 +170,7 @@ public class UserController {
 		return SysResult.success(m);
 	}
 
-	@RequestMapping("/upload")
+	@RequestMapping("/uploadPic")
 	@ResponseBody
 	public SysResult uploadUserPin(MultipartFile file, HttpServletRequest request) throws IOException {
 		String ticket = CookieUtil.getCookieValue(request, "MY_TICKET");
@@ -189,5 +189,18 @@ public class UserController {
 		m.put("src", url);
 		userService.updatePicture(user.getUserId(), url);
 		return SysResult.success(m);
+	}
+	
+	@PostMapping("/editPwd")
+	@ResponseBody
+	public SysResult editPassword(String pwdNow, String pwdNew, HttpServletRequest request) {
+		if(pwdNow == null || pwdNew == null || pwdNew.length() > 16 || pwdNew.length() < 6) {
+			return SysResult.failure("参数非法");
+		} else {
+			User user = (User) request.getAttribute("myUser");
+			boolean flag = userService.editPwd(user.getUserId(), pwdNow, pwdNew);
+			if(flag) return SysResult.success();
+			return SysResult.failure("密码不正确");
+		}
 	}
 }

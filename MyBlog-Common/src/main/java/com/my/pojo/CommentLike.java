@@ -1,6 +1,7 @@
 package com.my.pojo;
 
-import java.sql.Date;
+
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

@@ -73,5 +73,10 @@ public class ImageServiceImpl implements ImageService {
 		}
 	}
 
+	@Override
+	public String uploadArtPic(byte[] imgBytes, String fileName) {
+		return uploadPic(imgBytes, fileName);
+	}
+
 
 }

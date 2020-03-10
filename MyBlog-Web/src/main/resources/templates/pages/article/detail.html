@@ -102,7 +102,6 @@
           </span>
           <div class="fly-admin-box" data-id="123">
           	<span th:if="${article.userId == user.userId}">
-            <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
             </span>
 <!--             <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="1">置顶</span> 
             <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span>
@@ -177,7 +176,7 @@
               <p th:text="${comment.content}"></p>
             </div>
             <div class="jieda-reply">
-              <span onclick="doLike(this)" value="1" class="jieda-zan zanok" type="zan">
+              <span onclick="doLike(this)" th:id="${comment.commentId}" th:value="${comment.like}?'1':'0'" th:class="${comment.like}?'jieda-zan zanok':'jieda-zan'" type="zan">
                 <i class="iconfont icon-zan"></i>
                 <em  th:text="${comment.agreed}"></em>
               </span>
@@ -191,7 +190,7 @@
                 <span type="del"><a th:href="@{/comment/delete/(commentId=${comment.commentId}, articleId=${article.articleId})}">删除</a></span>
                 </span>
                 <span th:if="${user.userId == article.userId}">
-                <span class="jieda-accept" type="accept">采纳</span>
+                <span th:if="${comment.selected != true}" class="jieda-accept" th:onclick="'doAccept('+${comment.commentId} + ')'" type="accept">采纳</span>
                 </span>
               </div>
             </div>
@@ -348,12 +347,33 @@ function doLike(ele) {
 		$(ele).attr("value", -1);
 		var _em = $(ele).find("em");
 		_em.html(_em.html() - 1);
+		changeLikeTo(false, ele.id);
 	} else {
 		$(ele).attr("class", "jieda-zan zanok");
 		$(ele).attr("value", 1);
 		var _em = $(ele).find("em");
 		_em.html(eval(_em.html()) + 1);
+		changeLikeTo(true, ele.id);
 	}
+}
+
+function changeLikeTo(flag, commentId) {
+	$.post("/comment/changeLike",{"flag":flag,"commentId":commentId}, function(result) {
+		if(result.status != 200) {
+			alert("点赞失败,"+result.msg);
+		}
+	})
+}
+
+function doAccept(commentId) {
+	$.get("/comment/doSelect?commentId="+commentId, null, function(result) {
+		if(result.status!=200) {
+			alert("采纳失败," +result.msg);
+		} else {
+			alert("采纳成功");
+			location.reload();
+		}
+	})
 }
 </script>
 

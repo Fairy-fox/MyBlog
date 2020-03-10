@@ -6,4 +6,6 @@ public interface ImageService {
 
 	String uploadPic(byte[] imgBytes, String fileName);
 
+	String uploadArtPic(byte[] imgBytes, String fileName);
+
 }

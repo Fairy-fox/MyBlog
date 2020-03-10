@@ -140,20 +140,9 @@
 			</div>
 			<div class="layui-col-md4">
 
-				<div class="fly-panel">
-					<h3 class="fly-panel-title">温馨通道</h3>
-					<ul class="fly-panel-main fly-list-static">
-						<li><a href="http://fly.layui.com/jie/4281/" target="_blank">layui
-								的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a></li>
-						<li><a href="http://fly.layui.com/jie/5366/" target="_blank">
-								layui 常见问题的处理和实用干货集锦 </a></li>
-						<li><a href="http://fly.layui.com/jie/4281/" target="_blank">layui
-								的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a></li>
-						<li><a href="http://fly.layui.com/jie/5366/" target="_blank">
-								layui 常见问题的处理和实用干货集锦 </a></li>
-						<li><a href="http://fly.layui.com/jie/4281/" target="_blank">layui
-								的 GitHub 及 Gitee (码云) 仓库，欢迎Star</a></li>
-					</ul>
+				<div class="fly-panel" >
+					<h3 class="fly-panel-title">今日天气</h3>
+					<iframe width="700" scrolling="no" height="70" frameborder="0" allowtransparency="true" src="//i.tianqi.com/index.php?c=code&id=2&icon=2&num=2&site=12"></iframe>
 				</div>
 
 
@@ -178,10 +167,10 @@
 					</div>
 				</div>
 
-				<div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
+	<!-- 			<div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
 					<h3 class="fly-panel-title">回贴周榜</h3>
 					<dl>
-						<!--<i class="layui-icon fly-loading">&#xe63d;</i>-->
+						<i class="layui-icon fly-loading">&#xe63d;</i>
 
 						<dd>
 							<a href="user/home.html"> <img
@@ -189,19 +178,11 @@
 							</a>
 						</dd>
 					</dl>
-				</div>
+				</div> -->
 
 				<dl class="fly-panel fly-list-one">
-					<dt class="fly-panel-title">本周热议</dt>
-
-					<dd>
-						<a href="jie/detail.html">基于 layui 的极简社区页面模版</a> <span><i
-							class="iconfont icon-pinglun1"></i> 16</span>
-					</dd>
-
-
+					<dt id="hotArts" class="fly-panel-title">本周热议</dt>
 					<div style="display: none" class="fly-none">没有相关数据</div>
-
 				</dl>
 
 				<div class="fly-panel">
@@ -265,8 +246,18 @@
  	
 		$(function() {
 			initPage();
+			initArts();
 		})
-	
+		
+		function initArts() {
+			$.get("/article/weekHot/", function(result) {
+				var articles = result.data;
+				for(var item of articles) {
+					$("#hotArts").after("<dd><a href='article/detail?articleId="+item.articleId+"'>"+item.title+"</a> <span><i class='iconfont icon-pinglun1'></i>"+item.commentsNum+"</span></dd>")
+				}
+			})
+		}
+		
 		function initPage(page, col) {
 			checkLogin();
 			getArticle();
@@ -358,7 +349,7 @@
 				type : "GET",
 				success : function(data) {
 					if (data.status == 200) {
-						var _data = JSON.parse(data.data);
+						var _data =data.data;
 						console.log(_data.name);
 						$("#afterlogin").find("cite").html(_data.name);
 						$("#afterlogin").show();

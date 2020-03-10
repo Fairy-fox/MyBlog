@@ -12,4 +12,6 @@ public interface ArticleMapper extends BaseMapper<Article>{
 	List<Article> findTopArticleByColumnId();
 
 	Article selectArticleById(Long articleId);
+
+	List<Article> findWeekArts(int pageSize);
 }

@@ -114,4 +114,13 @@ public class UserServiceImpl implements UserService {
 		userMapper.updateById(user);
 	}
 
+	@Override
+	public boolean editPwd(Long userId, String pwdNow, String pwdNew) {
+		User user = userMapper.selectById(userId);
+		String md5Password = DigestUtils.md5DigestAsHex(pwdNow.getBytes());
+		if(user.getPassword().equals(md5Password)) return false;
+		user.setPassword(DigestUtils.md5DigestAsHex(pwdNew.getBytes())).setUpdatedTime(new Date());
+		return true;
+	}
+
 }

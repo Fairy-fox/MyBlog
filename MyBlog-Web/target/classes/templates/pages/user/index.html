@@ -177,7 +177,7 @@ function checkLogin() {
 		type : "GET",
 		success : function(data) {
 			if (data.status == 200) {
-				var _data = JSON.parse(data.data);
+				var _data = data.data;
 				console.log(_data.name);
 				$("#afterlogin").find("cite").html(_data.name);
 				$("#afterlogin").show();

@@ -135,7 +135,7 @@
 	function validatePassword(result) {
 		var password = result.value;
 
-		if(password.length < 6 || password.length > 12) {
+		if(password.length < 6 || password.length > 16) {
 			$(".passwordMsg").html("密码长度不符合要求");
 		} else {
 			$(".passwordMsg").html("密码可以使用");

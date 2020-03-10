@@ -17,4 +17,6 @@ public interface UserService {
 
 	void updatePicture(Long userId, String url);
 
+	boolean editPwd(Long userId, String pwdNow, String pwdNew);
+
 }

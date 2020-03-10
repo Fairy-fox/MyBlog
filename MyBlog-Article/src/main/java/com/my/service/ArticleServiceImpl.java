@@ -137,4 +137,21 @@ public class ArticleServiceImpl implements ArticleService {
 		return collect==null ? false : true;
 	}
 
+	@Override
+	public List<Article> findWeekArts() {
+		int pageSize = pageConfig.getPageCount();
+		if(pageSize > 5) pageSize -= 5;
+		List<Article> articles =  articleMapper.findWeekArts(pageSize);
+		System.out.println(articles);
+		return articles;
+	}
+
+	@Override
+	public void decrCommentNum(Long articleId) {
+		Article article = articleMapper.selectArticleById(articleId);
+		Article articleUpdate =  new Article();
+		articleUpdate.setArticleId(articleId).setCommentsNum(article.getCommentsNum() - 1);
+		articleMapper.updateById(articleUpdate);
+	}
+
 }

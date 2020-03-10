@@ -1,6 +1,9 @@
 package com.my.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.my.pojo.Article;
@@ -17,10 +21,13 @@ import com.my.pojo.Comment;
 import com.my.pojo.User;
 import com.my.service.ArticleService;
 import com.my.service.CommentService;
+import com.my.service.ImageService;
 import com.my.util.CookieUtil;
 import com.my.util.JedisPoolUtil;
 import com.my.util.ObjectMapperUtil;
 import com.my.vo.SysResult;
+
+import io.micrometer.core.instrument.util.StringUtils;
 
 @Controller
 @RequestMapping("/article")
@@ -35,6 +42,9 @@ public class ArticleController {
 	@Reference(check = false)
 	private CommentService commentService;
 
+	@Reference(check = false)
+	private ImageService imageService;
+	
 	@RequestMapping("/query")
 	@ResponseBody
 	public SysResult findAllPages(Integer pageNum, Integer colNum) {
@@ -105,5 +115,27 @@ public class ArticleController {
 		User user = (User) request.getAttribute("myUser");
 		if(user == null) return SysResult.success(false);
 		return SysResult.success(articleService.collectCheck(articleId, user.getUserId()));
+	}
+	
+	@RequestMapping("/weekHot")
+	@ResponseBody
+	public SysResult findWeekArts() {
+		return SysResult.success(articleService.findWeekArts());
+	}
+	
+	@RequestMapping("/upload")
+	@ResponseBody
+	public SysResult uploadArtPic(MultipartFile file, HttpServletRequest request) throws IOException {
+		String ticket = CookieUtil.getCookieValue(request, "MY_TICKET");
+		if(StringUtils.isEmpty(ticket)) {
+			return SysResult.failure("请登录");
+		}
+		String fileName = file.getOriginalFilename();
+		byte[] imgBytes = file.getBytes();
+		String url = imageService.uploadArtPic(imgBytes, fileName);
+		if(url == null) {
+			return SysResult.failure("上传失败");
+		}
+		return SysResult.success(url);
 	}
 }

@@ -36,6 +36,8 @@ public class MvcConfigurer implements WebMvcConfigurer {
 		list.add("/user/queryPostArts");
 		list.add("/user/editUser");
 		list.add("/user/upload");
+		list.add("/comment/changeLike");
+		list.add("/user/editPwd");
 		registry.addInterceptor(userInterceptor).addPathPatterns(list);
 	}
 	

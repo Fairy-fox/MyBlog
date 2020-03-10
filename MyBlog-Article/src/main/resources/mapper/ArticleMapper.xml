@@ -20,4 +20,7 @@
 		select a.*, b.name, c.column_name from article a,user b,article_column c
 		where a.user_id = b.user_id and a.column_id = c.column_id and article_id = #{articleId} order by a.created_time desc
 	</select>
+	<select id="findWeekArts" resultType="com.my.pojo.Article">
+		select * from article where created_time between current_date()-7 and sysdate() order by comments_num desc limit 0, #{pageSize};
+	</select>
 </mapper>

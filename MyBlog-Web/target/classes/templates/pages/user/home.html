@@ -22,9 +22,9 @@
 				<span id="beforelogin">
 					<li class="layui-nav-item"><a
 						class="iconfont icon-touxiang layui-hide-xs"
-						href="user/login.html"></a></li>
-					<li class="layui-nav-item"><a href="user/login">登入</a></li>
-					<li class="layui-nav-item"><a href="user/reg">注册</a></li>
+						href="/user/login.html"></a></li>
+					<li class="layui-nav-item"><a href="/user/login">登入</a></li>
+					<li class="layui-nav-item"><a href="/user/reg">注册</a></li>
 					<li class="layui-nav-item layui-hide-xs"><a href="/app/qq/"
 						onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})"
 						title="QQ登入" class="iconfont icon-qq"></a></li>
@@ -165,7 +165,7 @@ function checkLogin() {
 				type : "GET",
 				success : function(data) {
 					if (data.status == 200) {
-						var _data = JSON.parse(data.data);
+						var _data = data.data;
 						console.log(_data.name);
 						$("#afterlogin").find("cite").html(_data.name);
 						$("#afterlogin").show();
