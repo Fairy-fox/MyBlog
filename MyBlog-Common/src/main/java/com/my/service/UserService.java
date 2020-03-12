@@ -19,4 +19,6 @@ public interface UserService {
 
 	boolean editPwd(Long userId, String pwdNow, String pwdNew);
 
+	void signin(Long userId, int kissed);
+
 }

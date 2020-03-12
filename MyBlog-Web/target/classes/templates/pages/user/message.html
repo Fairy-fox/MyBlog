@@ -15,31 +15,49 @@
     </a>
    
     	<ul class="layui-nav fly-nav-user">
-				<li  id="afterlogin" class="layui-nav-item">
+
+				<!-- 未登入的状态 -->
+				<span id="beforelogin">
+					<li class="layui-nav-item"><a
+						class="iconfont icon-touxiang layui-hide-xs"
+						href="user/login.html"></a></li>
+					<li class="layui-nav-item"><a href="/user/login">登入</a></li>
+					<li class="layui-nav-item"><a href="/user/reg">注册</a></li>
+					<li class="layui-nav-item layui-hide-xs"><a href="/app/qq/"
+						onclick="layer.msg('正在通过QQ登入', {icon:16, shade: 0.1, time:0})"
+						title="QQ登入" class="iconfont icon-qq"></a></li>
+					<li class="layui-nav-item layui-hide-xs"><a href="/app/weibo/"
+						onclick="layer.msg('正在通过微博登入', {icon:16, shade: 0.1, time:0})"
+						title="微博登入" class="iconfont icon-weibo"></a></li>
+				</span>
+				<!-- 登入后的状态 -->
+
+				<li style="display: none" id="afterlogin" class="layui-nav-item">
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
-						class="layui-hide-xs"></cite> <i
+						class="layui-hide-xs">贤心</cite> <i
 						class="iconfont icon-renzheng layui-hide-xs"></i> <img
-						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						 id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
-							<a href="/user/set.html"><i class="layui-icon">&#xe620;</i>基本设置</a>
+							<a href="/user/set"><i class="layui-icon">&#xe620;</i>基本设置</a>
 						</dd>
 						<dd>
-							<a href="/user/message.html"><i class="iconfont icon-tongzhi"
+							<a href="/user/message"><i class="iconfont icon-tongzhi"
 								style="top: 4px;"></i>我的消息</a>
 						</dd>
 						<dd>
-							<a href="/user/home.html"><i class="layui-icon"
+							<a href="/user/home"><i class="layui-icon"
 								style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
 						</dd>
 						<hr style="margin: 5px 0;">
 						<dd>
-							<a href="/user/logout/" style="text-align: center;">退出</a>
+							<a href="/user/logout" style="text-align: center;">退出</a>
 						</dd>
 					</dl>
 				</li>
-				</ul>
+
+			</ul>
   </div>
 </div>
 
@@ -84,22 +102,10 @@
   
   <div class="fly-panel fly-panel-user" pad20>
 	  <div class="layui-tab layui-tab-brief" lay-filter="user" id="LAY_msg" style="margin-top: 15px;">
-	    <button class="layui-btn layui-btn-danger" id="LAY_delallmsg">清空全部消息</button>
+	    <button class="layui-btn layui-btn-danger" onclick="deleteMsg()" id="LAY_delallmsg">清空全部消息</button>
 	    <div  id="LAY_minemsg" style="margin-top: 10px;">
-        <!--<div class="fly-none">您暂时没有最新消息</div>-->
-        <ul class="mine-msg">
-          <li data-id="123">
-            <blockquote class="layui-elem-quote">
-              <a href="/jump?username=Absolutely" target="_blank"><cite>Absolutely</cite></a>回答了您的求解<a target="_blank" href="/jie/8153.html/page/0/#item-1489505778669"><cite>layui后台框架</cite></a>
-            </blockquote>
-            <p><span>1小时前</span><a href="javascript:;" class="layui-btn layui-btn-small layui-btn-danger fly-delete">删除</a></p>
-          </li>
-          <li data-id="123">
-            <blockquote class="layui-elem-quote">
-              系统消息：欢迎使用 layui
-            </blockquote>
-            <p><span>1小时前</span><a href="javascript:;" class="layui-btn layui-btn-small layui-btn-danger fly-delete">删除</a></p>
-          </li>
+        <div id="noMsg" class="fly-none">您暂时没有最新消息</div>
+        <ul id="msgContent" class="mine-msg">
         </ul>
       </div>
 	  </div>
@@ -117,20 +123,115 @@
   </p>
 </div>
 <script>
-layui.cache.page = 'user';
-layui.cache.user = {
-  username: '游客'
-  ,uid: -1
-  ,avatar: '../../res/images/avatar/00.jpg'
-  ,experience: 83
-  ,sex: '男'
-};
+
 layui.config({
   version: "3.0.0"
-  ,base: '../../res/mods/'
+  ,base: '/layuires/layui/res/mods/'
 }).extend({
   fly: 'index'
 }).use('fly');
+
+$(function() {
+	checkLogin();
+})
+function checkLogin() {
+	var _ticket = $.cookie("MY_TICKET");
+	if (!_ticket) {
+		return;
+	}
+	//当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
+	$.ajax({
+		url : "http://www.myblog.com/user/loginquery/" + _ticket,
+		dataType : "jsonp",
+		type : "GET",
+		success : function(data) {
+			if (data.status == 200) {
+				var _data = data.data;
+				$("#afterlogin").find("cite").html(_data.name);
+				$("#afterlogin").show();
+				$("#afterpost").show();
+				$("#beforelogin").hide();
+				$("#myPic").attr("src", _data.picture);
+				queryMyMsg();
+				$.get("/comment/queryMsgExist?userId="+_data.userId,null, function (result) {
+					if(result.status !=200) return;
+					if(result.data == 0) {
+						$(".layui-badge-dot").hide();
+					}
+				});
+			}
+		}
+	});
+}
+
+function queryMyMsg() {
+	$.get("/comment/queryMsg", null, function(result) {
+		if(result.status != 200) return;
+		createMsg(result.data);
+	});
+}
+
+function createMsg(data) {
+	if(data.length == 0)return;
+	$("#noMsg").hide();
+	for(var item of data ) {
+		var time = getDateDiff(new Date(item.createdTime));
+		$("#msgContent").append("<li id='"+item.messageId+"' data-id='"+ item.messageId +"'><blockquote class='layui-elem-quote'><a href='/user/home?userId="+item.fromUserId+"' target='_blank'><cite>"+item.fromUserName+"</cite></a>在<a target='_blank' href='/article/detail?articleId="+item.articleId+"#"+item.commentId+"'><cite>"+item.articleName+"</cite></a>回复了您<cite><a href='/article/detail?articleId="+item.articleId+"#"+item.commentId+"'>"+item.content+"</a></cite></blockquote><p><span>"+time+"</span><a href='javascript:;' onclick='deleteMsg("+item.messageId+")' class='layui-btn layui-btn-small layui-btn-danger fly-delete'>删除</a></p></li>");
+	}
+}
+
+function getDateDiff(dateTimeStamp){
+	var minute = 1000 * 60;
+	var hour = minute * 60;
+	var day = hour * 24;
+	var halfamonth = day * 15;
+	var month = day * 30;
+	var now = new Date().getTime();
+	var diffValue = now - dateTimeStamp;
+	if(diffValue < 0){return;}
+	var monthC =diffValue/month;
+	var weekC =diffValue/(7*day);
+	var dayC =diffValue/day;
+	var hourC =diffValue/hour;
+	var minC =diffValue/minute;
+	if(monthC>=1){
+		result="" + parseInt(monthC) + "月前";
+	}
+	else if(weekC>=1){
+		result="" + parseInt(weekC) + "周前";
+	}
+	else if(dayC>=1){
+		result=""+ parseInt(dayC) +"天前";
+	}
+	else if(hourC>=1){
+		result=""+ parseInt(hourC) +"小时前";
+	}
+	else if(minC>=1){
+		result=""+ parseInt(minC) +"分钟前";
+	}else {
+	result="刚刚";
+	}
+	return result;
+}
+
+function deleteMsg(msgId) {
+	var _ticket = $.cookie("MY_TICKET");
+	if (!_ticket) {
+		return;
+	}
+	$.get("/comment/deleteMsg",{"messageId":msgId}, function(result) {
+		if(result.status==200) {
+			if(msgId) {
+				$("#"+msgId).hide();
+			} else {
+				$("#msgContent").empty();
+				$("#noMsg").show();
+			}
+		} else {
+			alert("服务器繁忙");
+		}
+	})
+}
 </script>
 
 </body>

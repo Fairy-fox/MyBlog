@@ -1,5 +1,7 @@
 package com.my.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.my.pojo.Comment;
+import com.my.pojo.Message;
 import com.my.pojo.User;
 import com.my.service.ArticleService;
 import com.my.service.CommentService;
+import com.my.service.UserService;
 import com.my.util.CookieUtil;
 import com.my.util.JedisPoolUtil;
 import com.my.util.ObjectMapperUtil;
@@ -31,21 +35,40 @@ public class CommentController {
 	@Reference(check = false)
 	ArticleService articleService;
 	
+	@Reference(check = false)
+	UserService userService;
+	
 	@Autowired
 	JedisPoolUtil jedisPoolUtil;
 	
 	@PostMapping("/reply")
-	public String saveComment(Comment comment, Long articleId, HttpServletRequest request, HttpServletResponse response) {
+	@ResponseBody
+	public SysResult saveComment(Comment comment, Long articleId, String title, Long toUserId, HttpServletRequest request, HttpServletResponse response) {
 		String userInfo = CookieUtil.getCookieValue(request, "MY_TICKET");
 		System.out.println(userInfo);
 		if(userInfo == null || userInfo.equals("")) {
 			CookieUtil.deleteCookie(response, "MY_TICKET", "myblog.com", "/");
-			return "/user/login";
+			return SysResult.failure();
 		}
 		User user = ObjectMapperUtil.toObj(jedisPoolUtil.getJedisCluster().get(userInfo), User.class);
 		comment.setName(user.getName()).setUserId(user.getUserId()).setArticleId(articleId);
-		commentService.saveComment(comment);
-		return "redirect:/article/detail?articleId=" + articleId;
+		commentService.saveComment(comment, title, toUserId);
+		return SysResult.success();
+	}
+	
+	@PostMapping("/replyToUser")
+	@ResponseBody
+	public SysResult saveCommentToUser(Comment comment, Long articleId, String title, Long toUserId, HttpServletRequest request, HttpServletResponse response) {
+		String userInfo = CookieUtil.getCookieValue(request, "MY_TICKET");
+		System.out.println(userInfo);
+		if(userInfo == null || userInfo.equals("")) {
+			CookieUtil.deleteCookie(response, "MY_TICKET", "myblog.com", "/");
+			return SysResult.failure();
+		}
+		User user = ObjectMapperUtil.toObj(jedisPoolUtil.getJedisCluster().get(userInfo), User.class);
+		comment.setName(user.getName()).setUserId(user.getUserId()).setArticleId(articleId);
+		commentService.saveComment(comment, title, toUserId);
+		return SysResult.success();
 	}
 	
 	@PostMapping("/editComment")
@@ -85,5 +108,46 @@ public class CommentController {
 	public SysResult selectComment(Long commentId) {
 		commentService.selectComment(commentId);
 		return SysResult.success();
+	}
+	
+	@GetMapping("/querySignin")
+	@ResponseBody
+	public SysResult querySignin(HttpServletRequest request) {
+		User user = (User)request.getAttribute("myUser");
+		return SysResult.success(commentService.findSignin(user.getUserId()));
+	}
+	
+	@GetMapping("/doSignin")
+	@ResponseBody
+	public SysResult doSignin(HttpServletRequest request) {
+		User user = (User)request.getAttribute("myUser");
+		int times = commentService.doSigninByUserId(user.getUserId());
+		userService.signin(user.getUserId(), times);
+		return SysResult.success(times);
+	}
+	
+	@GetMapping("/queryMsg")
+	@ResponseBody
+	public SysResult queryMessage(HttpServletRequest request) {
+		User user = (User)request.getAttribute("myUser");
+		List<Message> msgs = commentService.getMessagesByUserId(user.getUserId());
+		return SysResult.success(msgs);
+	}
+	
+	@GetMapping("/deleteMsg")
+	@ResponseBody
+	public SysResult deleteMessage(HttpServletRequest request, Long messageId) {
+		User user = (User)request.getAttribute("myUser");
+		commentService.deleteMsg(user.getUserId(), messageId);
+		return SysResult.success();
+	}
+	
+	@GetMapping("/queryMsgExist")
+	@ResponseBody
+	public SysResult queryMessage(Long userId) {
+		if(userId == null) {
+			return SysResult.failure();
+		}
+		return SysResult.success(commentService.queryMessageByUserId(userId));
 	}
 }

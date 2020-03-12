@@ -37,7 +37,7 @@
 						class="layui-hide-xs">贤心</cite> <i
 						class="iconfont icon-renzheng layui-hide-xs"></i>
 					<img
-						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><span class="layui-badge-dot" style="position: relative; top: -12px; left: -4px;">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
@@ -45,7 +45,7 @@
 						</dd>
 						<dd>
 							<a href="user/message.html"><i class="iconfont icon-tongzhi"
-								style="top: 4px;"></i>我的消息</a>
+								style="top: 4px;"></i>我的消息</a><span class="layui-badge-dot"></span>
 						</dd>
 						<dd>
 							<a href="user/home.html"><i class="layui-icon"
@@ -152,6 +152,12 @@ function checkLogin() {
 				$("#afterlogin").show();
 				$("#afterpost").show();
 				$("#beforelogin").hide();
+				$.get("/comment/queryMsgExist?userId="+_data.userId,null, function (result) {
+					if(result.status !=200) return;
+					if(result.data == 0) {
+						$(".layui-badge-dot").hide();
+					}
+				});
 			}
 		}
 	});

@@ -137,7 +137,8 @@ public class UserController {
 				CookieUtil.deleteCookie(response, "MY_TICKET", "myblog.com", "/");
 				return "redirect:/user/login";
 			}
-			user = ObjectMapperUtil.toObj(userInfo, User.class);
+			User userR = ObjectMapperUtil.toObj(userInfo, User.class);
+			user = userService.findUserByUserId(userR.getUserId());
 		} else {
 			user = userService.findUserByUserId(userId);
 		}

@@ -123,4 +123,25 @@ public class UserServiceImpl implements UserService {
 		return true;
 	}
 
+	@Override
+	public void signin(Long userId, int times) {
+		User user  = userMapper.selectById(userId);
+		User userUpdated = new User();
+		int kissed = 0;
+		if(times < 5) {
+			kissed = 5;
+		} else if(times < 15) {
+			kissed = 10;
+		} else if(times < 30) {
+			kissed = 15;
+		} else {
+			kissed = 30;
+		};
+		if(times == -1) {
+			kissed = 0;
+		}
+		userUpdated.setUserId(userId).setKissed(user.getKissed() + kissed).setUpdatedTime(new Date());
+		userMapper.updateById(userUpdated);
+	}
+
 }

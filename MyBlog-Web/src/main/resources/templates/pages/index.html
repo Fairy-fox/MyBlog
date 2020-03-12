@@ -35,20 +35,20 @@
 
 				<li style="display: none" id="afterlogin" class="layui-nav-item">
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
-						class="layui-hide-xs">贤心</cite> <i
-						class="iconfont icon-renzheng layui-hide-xs"></i> <img
-						 id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						class="layui-hide-xs"></cite> <i
+						class="iconfont icon-renzheng layui-hide-xs"></i><img
+						 id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><span class="layui-badge-dot" style="position: relative; top: -12px; left: -4px;">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
-							<a href="user/set"><i class="layui-icon">&#xe620;</i>基本设置</a>
+							<a href="/user/set"><i class="layui-icon">&#xe620;</i>基本设置</a>
 						</dd>
 						<dd>
-							<a href="user/message"><i class="iconfont icon-tongzhi"
-								style="top: 4px;"></i>我的消息</a>
+							<a href="/user/message"><i class="iconfont icon-tongzhi"
+								style="top: 4px;"></i>我的消息</a><span class="layui-badge-dot"></span>
 						</dd>
 						<dd>
-							<a href="user/home"><i class="layui-icon"
+							<a href="/user/home"><i class="layui-icon"
 								style="margin-left: 2px; font-size: 22px;">&#xe68e;</i>我的主页</a>
 						</dd>
 						<hr style="margin: 5px 0;">
@@ -149,21 +149,14 @@
 				<div class="fly-panel fly-signin">
 					<div class="fly-panel-title">
 						签到 <i class="fly-mid"></i> <a href="javascript:;" class="fly-link"
-							id="LAY_signinHelp">说明</a> <i class="fly-mid"></i> <a
-							href="javascript:;" class="fly-link" id="LAY_signinTop">活跃榜<span
-							class="layui-badge-dot"></span></a> <span class="fly-signin-days">已连续签到<cite>16</cite>天
-						</span>
+							id="LAY_signinHelp">说明</a> <!-- <span class="fly-signin-days">已连续签到<cite>16</cite>天
+						</span> -->
 					</div>
 					<div class="fly-panel-main fly-signin-main">
-						<button class="layui-btn layui-btn-danger" id="LAY_signin">今日签到</button>
-						<span>可获得<cite>5</cite>飞吻
-						</span>
+						<button id="beforeSign" onclick="doSignin()" class="layui-btn layui-btn-danger">今日签到</button>
 
 						<!-- 已签到状态 -->
-						<!--
-          <button class="layui-btn layui-btn-disabled">今日已签到</button>
-          <span>获得了<cite>20</cite>飞吻</span>
-          -->
+          <button style="display: none" id="afterSign" class="layui-btn layui-btn-disabled">今日已签到</button>
 					</div>
 				</div>
 
@@ -229,6 +222,22 @@
 	  fly: 'index'
 	}).use('fly'); 
 		
+ 	function doSignin() {
+ 		var _ticket = $.cookie("MY_TICKET");
+		if (!_ticket) {
+			alert("请先登录");
+			return;
+		}
+		$.get("/comment/doSignin",null, function(result) {
+			if(result.status!=200) {
+				alert("签到失败");
+				return;
+			}else {
+				$("#afterSign").show();
+				$("#beforeSign").hide();
+			}
+		});
+ 	}
  		function switchColumn(column) {
  			$("#0")[0].className = "";
  			$("#1")[0].className = "";
@@ -247,12 +256,30 @@
 		$(function() {
 			initPage();
 			initArts();
+			initSignin();
 		})
+		
+		function initSignin() {
+			var _ticket = $.cookie("MY_TICKET");
+			if (!_ticket) {
+				return;
+			}
+			$.get("/comment/querySignin",null, function(result) {
+				if(result.status!=200) return;
+				if(result.data == -1) {
+					$("#afterSign").show();
+					$("#beforeSign").hide();
+				} else {
+					$("#kissedNum").html(result.data);
+				}
+			}) 
+		}
 		
 		function initArts() {
 			$.get("/article/weekHot/", function(result) {
 				var articles = result.data;
-				for(var item of articles) {
+				for(var i=articles.length - 1; i>=0; i-- ) {
+					var item=articles[i];
 					$("#hotArts").after("<dd><a href='article/detail?articleId="+item.articleId+"'>"+item.title+"</a> <span><i class='iconfont icon-pinglun1'></i>"+item.commentsNum+"</span></dd>")
 				}
 			})
@@ -350,17 +377,22 @@
 				success : function(data) {
 					if (data.status == 200) {
 						var _data =data.data;
-						console.log(_data.name);
 						$("#afterlogin").find("cite").html(_data.name);
 						$("#afterlogin").show();
 						$("#afterpost").show();
 						$("#beforelogin").hide();
 						$("#myPic").attr("src", _data.picture);
+						$.get("/comment/queryMsgExist?userId="+_data.userId,null, function (result) {
+							if(result.status !=200) return;
+							if(result.data == 0) {
+								$(".layui-badge-dot").hide();
+							}
+						});
 					}
 				}
 			});
 		}
-	
+			
 </script>
 
 	<script type="text/javascript">

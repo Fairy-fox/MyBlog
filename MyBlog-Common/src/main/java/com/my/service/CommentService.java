@@ -4,12 +4,13 @@ import java.util.List;
 
 import com.my.pojo.Article;
 import com.my.pojo.Comment;
+import com.my.pojo.Message;
 
 public interface CommentService {
 
 	List<Comment> getCommentsByArticleId(Long articleId);
 
-	void saveComment(Comment comment);
+	Long saveComment(Comment comment, String title, Long toUserId);
 
 	Comment getCommentByCommentId(Long commentId);
 
@@ -24,5 +25,15 @@ public interface CommentService {
 	void doUserLike(Boolean flag, Long commentId, Long userId);
 
 	void selectComment(Long commentId);
+
+	Integer findSignin(Long userId);
+
+	Integer doSigninByUserId(Long userId);
+
+	List<Message> getMessagesByUserId(Long userId);
+
+	void deleteMsg(Long userId, Long messageId);
+
+	Integer queryMessageByUserId(Long userId);
 
 }

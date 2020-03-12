@@ -96,12 +96,10 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
     //简易编辑器
     ,layEditor: function(options){
       var html = ['<div class="layui-unselect fly-edit">'
-        ,'<span type="face" title="插入表情"><i class="iconfont icon-yxj-expression" style="top: 1px;"></i></span>'
         ,'<span type="picture" title="插入图片：img[src]"><i class="iconfont icon-tupian"></i></span>'
         ,'<span type="href" title="超链接格式：a(href)[text]"><i class="iconfont icon-lianjie"></i></span>'
         ,'<span type="code" title="插入代码或引用"><i class="iconfont icon-emwdaima" style="top: 1px;"></i></span>'
         ,'<span type="hr" title="插入水平线">hr</span>'
-        ,'<span type="yulan" title="预览"><i class="iconfont icon-yulan1"></i></span>'
       ,'</div>'].join('');
 
       var log = {}, mod = {
@@ -170,7 +168,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
               form.on('submit(uploadImages)', function(data){
                 var field = data.field;
                 if(!field.image) return image.focus();
-                layui.focusInsert(editor[0], 'img['+ field.image + '] ');
+                layui.focusInsert(editor[0], "<img src='"+ field.image +"'/>");
                 layer.close(index);
               });
             }
@@ -191,7 +189,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
               layer.tips('这根本不是个链接，不要骗我。', elem, {tips:1})
               return;
             }
-            layui.focusInsert(editor[0], ' a('+ val +')['+ val + '] ');
+            layui.focusInsert(editor[0], "<a href='" +val + "'>"+val +"</a>");
             layer.close(index);
           });
         }
@@ -204,12 +202,12 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
             ,id: 'LAY_flyedit_code'
             ,area: ['800px', '360px']
           }, function(val, index, elem){
-            layui.focusInsert(editor[0], '[pre]\n'+ val + '\n[/pre]');
+            layui.focusInsert(editor[0], '<pre>\n'+ val + '\n</pre>');
             layer.close(index);
           });
         }
         ,hr: function(editor){ //插入水平分割线
-          layui.focusInsert(editor[0], '[hr]');
+          layui.focusInsert(editor[0], '<hr>');
         }
         ,yulan: function(editor){ //预览
           var content = editor.val();
@@ -547,7 +545,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
   });
 
   //表单提交
-  form.on('submit(*)', function(data){
+/*  form.on('submit(*)', function(data){
     var action = $(data.form).attr('action'), button = $(data.elem);
     fly.json(action, data.field, function(res){
       var end = function(){
@@ -566,7 +564,7 @@ layui.define(['layer', 'laytpl', 'form', 'element', 'upload', 'util'], function(
       };
     });
     return false;
-  });
+  });*/
 
   //加载特定模块
   if(layui.cache.page && layui.cache.page !== 'index'){

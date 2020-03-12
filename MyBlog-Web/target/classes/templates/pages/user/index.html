@@ -36,9 +36,9 @@
 
 				<li style="display: none" id="afterlogin" class="layui-nav-item">
 					<a class="fly-nav-avatar" href="javascript:;"> <cite
-						class="layui-hide-xs">贤心</cite> <i
-						class="iconfont icon-renzheng layui-hide-xs"></i> <img
-						id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+						class="layui-hide-xs"></cite> <i
+						class="iconfont icon-renzheng layui-hide-xs"></i><img
+						 id="myPic" src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><span class="layui-badge-dot" style="position: relative; top: -12px; left: -4px;">
 				</a>
 					<dl class="layui-nav-child">
 						<dd>
@@ -46,7 +46,7 @@
 						</dd>
 						<dd>
 							<a href="/user/message"><i class="iconfont icon-tongzhi"
-								style="top: 4px;"></i>我的消息</a>
+								style="top: 4px;"></i>我的消息</a><span class="layui-badge-dot"></span>
 						</dd>
 						<dd>
 							<a href="/user/home"><i class="layui-icon"
@@ -184,6 +184,12 @@ function checkLogin() {
 				$("#afterpost").show();
 				$("#beforelogin").hide();
 				$("#myPic").attr("src", _data.picture);
+				$.get("/comment/queryMsgExist?userId="+_data.userId,null, function (result) {
+					if(result.status !=200) return;
+					if(result.data == 0) {
+						$(".layui-badge-dot").hide();
+					}
+				});
 			}
 		}
 	});
@@ -293,7 +299,7 @@ function doHandleArticleResult(result) {
 
 function createArticle(item) {
 	var post = $("<li></li>");
-	post.append("<a class='jie-title' href='/article/detail?articleId=" + item.articleId+"' target='_blank'>"+item.content+"</a><i>"+new Date(item.updatedTime).toLocaleString()+"</i><a class='mine-edit' href='/article/edit?articleId="+item.articleId+"'>编辑</a><em>"+item.viewed+"阅/"+item.commentsNum+"答</em>");
+	post.append("<a class='jie-title' href='/article/detail?articleId=" + item.articleId+"' target='_blank'>"+item.title+"</a><i>"+new Date(item.updatedTime).toLocaleString()+"</i><a class='mine-edit' href='/article/edit?articleId="+item.articleId+"'>编辑</a><em>"+item.viewed+"阅/"+item.commentsNum+"答</em>");
 	$("#myArt").append(post);
 }
 </script>
