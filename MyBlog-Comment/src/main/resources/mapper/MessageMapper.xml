@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.my.mapper.MessageMapper">
+	<select id="getMessagesByUserId" resultType="com.my.pojo.Message">
+		select a.*, b.title as articleName, c.name as fromUserName
+		from message a, article b, user c where a.from_user_id = c.user_id and a.article_id = b.article_id
+		and a.to_user_id = #{userId} and a.viewed = 0;  
+	</select>
+</mapper>
